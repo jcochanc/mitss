@@ -2,7 +2,12 @@ pacman::p_load(MASS, Matrix, lme4, R2WinBUGS, coda, foreign,
                MCMCpack, mnormt, corpcor, splines, mgcv, arm,
                dplyr)
 
-# Function that checks if the column is a factor column or binary
+#' @title IsBinaryOrFactor
+#' @description Function that checks if the column is a factor column or binary.
+#' @param column is the column vector we are checking.
+#' @return a value of 0 or 1 indicating that the column is binary or factor
+#' respectively.
+#' @export
 IsBinaryOrFactor <- function(column){
   if(length(unique(column)) == 2){
     return(1)}
@@ -11,54 +16,58 @@ IsBinaryOrFactor <- function(column){
   return(0)
 }
 
+#' @description  addTerm is a function that adds a covaraiate/interaction to the current model.
+#' @param  termtoAdd is the column of the covariate/interaction considered.
+#' @param curModel is the model in the current state.
+#' @param matName is the name of the matrix of covariates.
+#' @return The Chi^2 value of the comparison between new model to old model.
+#' @export
+addTerm <- function(termToAdd, curModel, matName){
+  # Adding a new covariate to the string.   
+  strAddFormula = sprintf("~.+%s[,%d]",matName, termToAdd)
+  
+  # Generating an R formula object from the new string.
+  fadd = formula(strAddFormula)
+  
+  # Generating a new model with the added covariate/interaction.
+  fadd = update(formula(curModel), fadd)
+  
+  # Comparing the previous model to the new model using the Chi^2 test.       
+  aovVal = add1(curModel, fadd, scale = 0, test ="Chisq", k = 0)
+  
+  # Returning the Chi^2 value of the comparison between new model to old model
+  return(aovVal[2,4])
+}
 
-#StepwisePropCalc is a function to estimate the propensity score based on Imbens & Rubin chapter 13 stepwise procedure
-#CovMat is a N by K matrix with N people and K covariates. MustInclude is a vecor of size K of {0,1} values that defines
-#covariates that must be included in the propensity score. Cl is scalar value defining the threshhold for including main effect
-#covariate. Cq is a scalar value defining the threshold for including an interaction of covariates
-StepwisePropCalc = function(TreatIndicator, CovMat, MustInclude, Cl=1, Cq=2.71, main.only = FALSE)
-{
+#' @description StepwisePropCalc is a function to estimate the propensity score based
+#' on Imbens & Rubin chapter 13 stepwise procedure.
+#' @param CovMat is a N by K matrix with N observations and K covariates.
+#' @param MustInclude is a vecor of size K of {0,1} values that defines 
+#' covariates that must be included in the propensity score. 
+#' @param Cl is scalar value defining the threshhold for including main effect covariate.
+#' @param  Cq is a scalar value defining the threshold for including an interaction of covariates.
+#' @return 
+StepwisePropCalc = function(TreatIndicator, CovMat, MustInclude,
+                            Cl=1, Cq=2.71, main.only = FALSE){
   #saving the name of the covariates
   colNames = names(CovMat)
   
   #CovMat = as.matrix(CovMat)
   
-  #addTem is a function that adds a covaraiate/interaction to the curren model. termtoAdd is the column of the covariate/interaction considered.
-  #curModel is the model in the current state. matName is the name of the matrix of covariates
-  addTerm = function(termToAdd, curModel, matName)
-  {
-    #adding a new covariate to the string    
-    strAddFormula = sprintf("~.+%s[,%d]",matName, termToAdd)
-    
-    #generating and R formula object from the new string
-    fadd = formula(strAddFormula)
-    
-    #generating a new model with the added covariate/interaction
-    fadd = update(formula(curModel), fadd)
-    
-    #comparing the previous model to the new model using the Chi^2 test       
-    aovVal = add1(curModel, fadd, scale = 0, test ="Chisq", k = 0)
-    
-    #returing the Chi^2 value of the comparison between new model to old model
-    return(aovVal[2,4])
-  }
-  
-  #creating a formula with all of the covariates that must be in the model
-  if(sum(MustInclude) >0)
-  {
-    strFormula = sprintf("TreatIndicator~%s]",paste("CovMat[,", which(MustInclude == 1), sep = "",collapse="]+"))
-  }
-  else
-  {
+  # Creating a formula with all of the covariates that must be in the model.
+  if(sum(MustInclude) > 0){
+    strFormula = sprintf("TreatIndicator~%s]",
+                         paste("CovMat[,",
+                               which(MustInclude == 1), sep = "",collapse="]+"))
+    } else{
     strFormula = sprintf("TreatIndicator~1")
-  }
+    }
   
-  #checking the formula
+  # Checking the formula.
+  # Calculating propensity score model for all of the covariates that must be in the model
+  curModel = glm(formula(strFormula), family=binomial(logit))
   
-  #Calculating propensity score model for all of the covariates that must be in the model
-  curModel = glm(formula(strFormula),family=binomial(logit))
-  
-  #checking which of the covariates was not included in the model yet
+  # Checking which of the covariates was not included in the model yet.
   notYetIncluded = which(MustInclude == 0)
   
   #for of the covariates not included in the model find their Chi^2 value for adding the covariate
@@ -99,7 +108,7 @@ StepwisePropCalc = function(TreatIndicator, CovMat, MustInclude, Cl=1, Cq=2.71, 
     }
   }
   
-  #after adding all of the main effect covariates. Now working on interactions and sqaured main effects
+  #after adding all of the main effect covariates. Now working on interactions and squared main effects
   
   #generating a formula to calculate all of the second order interactions
   strFormula = sprintf("~(%s])^2-1",paste("CovMat[,", which(MustInclude == 1), sep = "",collapse="]+"))
