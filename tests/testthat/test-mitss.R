@@ -51,7 +51,11 @@ test_that("check_overlap detects poor overlap", {
   e <- plogis(3 * X)
   W <- rbinom(n, 1, e)
   
-  overlap <- check_overlap(e, W, threshold = 0.3)
+  # Suppress expected warning about poor overlap
+  expect_warning(
+    overlap <- check_overlap(e, W, threshold = 0.3),
+    "Limited overlap detected"
+  )
   
   expect_true(is.numeric(overlap$jsd))
   expect_true(is.logical(overlap$adequate_overlap))

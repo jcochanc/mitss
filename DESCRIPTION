@@ -16,7 +16,7 @@ Description: Implements the MITSS (Multiple Imputation using Two Subclassificati
     <doi:10.1002/sim.6532>. The method treats causal effect estimation as a 
     missing data problem and uses multiple imputation to estimate treatment effects 
     with proper uncertainty quantification.
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends: 
