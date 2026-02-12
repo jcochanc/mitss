@@ -1,0 +1,35 @@
+Package: mitss
+Type: Package
+Title: Multiple Imputation using Two Subclassification Splines for Causal Inference
+Version: 0.1.0
+Authors@R: c(
+    person("Roee", "Gutman", role = "aut", 
+           comment = "Author of original method"),
+    person("Donald B.", "Rubin", role = "aut",
+           comment = "Author of original method"),
+    person("Jerson", "Cochancela", email = "jerson@brown.edu", 
+           role = c("cre", "ctb"),
+           comment = "Package implementation"))
+Description: Implements the MITSS (Multiple Imputation using Two Subclassification 
+    Splines) method for estimating causal effects of binary treatments in 
+    unconfounded observational studies. Based on Gutman and Rubin (2015) 
+    <doi:10.1002/sim.6532>. The method treats causal effect estimation as a 
+    missing data problem and uses multiple imputation to estimate treatment effects 
+    with proper uncertainty quantification.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.5.0)
+Imports:
+    splines,
+    stats,
+    MASS
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+RoxygenNote: 7.2.0
+VignetteBuilder: knitr
+URL: https://github.com/jcochanc/mitss
+BugReports: https://github.com/jcochanc/mitss/issues
