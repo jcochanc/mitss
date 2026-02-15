@@ -1,6 +1,7 @@
 # mitss: Multiple Imputation using Two Subclassification Splines
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/jcochanc/mitss/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jcochanc/mitss/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Overview

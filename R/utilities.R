@@ -16,6 +16,7 @@
 #'
 #' @export
 #'
+#' @importFrom stats rnorm
 #' @examples
 #' n <- 1000
 #' X <- rnorm(n)
@@ -63,6 +64,7 @@ check_overlap <- function(e_hat, W, threshold = 0.3) {
 #' @param nbins Number of bins for histogram (default: 50)
 #' @return Jensen-Shannon divergence
 #' @keywords internal
+#' @importFrom graphics hist
 calculate_jsd <- function(x1, x2, nbins = 50) {
   # Create common breaks
   all_x <- c(x1, x2)
@@ -103,6 +105,7 @@ calculate_jsd <- function(x1, x2, nbins = 50) {
 #'
 #' @return List with trimmed data
 #' @export
+#' @importFrom stats rnorm
 #'
 #' @examples
 #' set.seed(123)
@@ -138,7 +141,7 @@ trim_by_propensity <- function(Y, W, X, e_hat, method = c("minmax", "crump")) {
   return(list(
     Y = Y[keep_idx],
     W = W[keep_idx],
-    X = X[keep_idx, , drop = FALSE],
+    X = if (is.matrix(X)) X[keep_idx, , drop = FALSE] else X[keep_idx],
     e_hat = e_hat[keep_idx],
     keep_indices = keep_idx,
     n_removed = n_removed
@@ -165,6 +168,7 @@ trim_by_propensity <- function(Y, W, X, e_hat, method = c("minmax", "crump")) {
 #' 
 #' bias_df <- calculate_standardized_bias(X, W)
 #' print(bias_df)
+#' @importFrom stats weighted.mean rnorm
 calculate_standardized_bias <- function(X, W, weights = NULL) {
   
   if (is.null(weights)) {
@@ -242,6 +246,7 @@ calculate_standardized_bias <- function(X, W, weights = NULL) {
 #' harmful <- estimate_harmful_proportion(result)
 #' print(harmful$prop_harmful)
 #' }
+#' @importFrom stats qt var
 estimate_harmful_proportion <- function(mitss_result) {
   
   if (!inherits(mitss_result, "mitss")) {
