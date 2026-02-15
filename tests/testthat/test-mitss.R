@@ -1,10 +1,10 @@
 test_that("mitss works with simple data", {
   set.seed(123)
   n <- 200
-  X <- rnorm(n)
-  e <- plogis(0.5 * X)
+  X <- matrix(rnorm(n), ncol = 1)
+  e <- plogis(0.5 * X[,1])
   W <- rbinom(n, 1, e)
-  Y <- 1.0 * W + 0.5 * X + rnorm(n)
+  Y <- 1.0 * W + 0.5 * X[,1] + rnorm(n)
   
   result <- mitss(Y, W, X, M = 5, seed = 456)
   
@@ -33,10 +33,10 @@ test_that("mitss works with multiple covariates", {
 test_that("mitss handles user-provided propensity scores", {
   set.seed(234)
   n <- 150
-  X <- rnorm(n)
-  e_true <- plogis(X)
+  X <- matrix(rnorm(n), ncol = 1)
+  e_true <- plogis(X[,1])
   W <- rbinom(n, 1, e_true)
-  Y <- W + X + rnorm(n)
+  Y <- W + X[,1] + rnorm(n)
   
   result <- mitss(Y, W, X, e_hat = e_true, M = 5, seed = 567)
   
@@ -46,9 +46,9 @@ test_that("mitss handles user-provided propensity scores", {
 test_that("check_overlap detects poor overlap", {
   set.seed(345)
   n <- 200
-  X <- rnorm(n)
+  X <- matrix(rnorm(n), ncol = 1)
   # Strong effect -> poor overlap
-  e <- plogis(3 * X)
+  e <- plogis(3 * X[,1])
   W <- rbinom(n, 1, e)
   
   # Suppress expected warning about poor overlap
@@ -65,12 +65,12 @@ test_that("check_overlap detects poor overlap", {
 test_that("trim_by_propensity removes correct units", {
   set.seed(456)
   n <- 200
-  X <- rnorm(n)
-  e <- plogis(2 * X)
+  X <- matrix(rnorm(n), ncol = 1)
+  e <- plogis(2 * X[,1])
   W <- rbinom(n, 1, e)
-  Y <- W + X + rnorm(n)
+  Y <- W + X[,1] + rnorm(n)
   
-  trimmed <- trim_by_propensity(Y, W, matrix(X, ncol=1), e, method = "minmax")
+  trimmed <- trim_by_propensity(Y, W, X, e, method = "minmax")
   
   expect_true(length(trimmed$Y) <= n)
   expect_equal(length(trimmed$Y), length(trimmed$W))
@@ -95,10 +95,10 @@ test_that("calculate_standardized_bias works", {
 test_that("estimate_harmful_proportion works", {
   set.seed(678)
   n <- 200
-  X <- rnorm(n)
-  e <- plogis(0.5 * X)
+  X <- matrix(rnorm(n), ncol = 1)
+  e <- plogis(0.5 * X[,1])
   W <- rbinom(n, 1, e)
-  Y <- 0.5 * W + 0.3 * X + rnorm(n)
+  Y <- 0.5 * W + 0.3 * X[,1] + rnorm(n)
   
   result <- mitss(Y, W, X, M = 5, seed = 789)
   harmful <- estimate_harmful_proportion(result)
@@ -112,10 +112,10 @@ test_that("estimate_harmful_proportion works", {
 test_that("print and summary methods work", {
   set.seed(890)
   n <- 150
-  X <- rnorm(n)
-  e <- plogis(0.5 * X)
+  X <- matrix(rnorm(n), ncol = 1)
+  e <- plogis(0.5 * X[,1])
   W <- rbinom(n, 1, e)
-  Y <- W + X + rnorm(n)
+  Y <- W + X[,1] + rnorm(n)
   
   result <- mitss(Y, W, X, M = 5, seed = 901)
   
@@ -126,9 +126,9 @@ test_that("print and summary methods work", {
 test_that("input validation works", {
   set.seed(111)
   n <- 100
-  X <- rnorm(n)
+  X <- matrix(rnorm(n), ncol = 1)
   W <- rbinom(n, 1, 0.5)
-  Y <- W + X + rnorm(n)
+  Y <- W + X[,1] + rnorm(n)
   
   # Mismatched lengths
   expect_error(mitss(Y, W[-1], X))

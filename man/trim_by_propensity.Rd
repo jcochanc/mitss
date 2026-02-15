@@ -25,10 +25,10 @@ to improve the validity of causal effect estimates.
 \examples{
 set.seed(123)
 n <- 500
-X <- rnorm(n)
-e <- plogis(2 * X)
+X <- matrix(rnorm(n), ncol = 1)
+e <- plogis(2 * X[,1])
 W <- rbinom(n, 1, e)
-Y <- W + X + rnorm(n)
+Y <- W + X[,1] + rnorm(n)
 
 trimmed <- trim_by_propensity(Y, W, X, e, method = "minmax")
 cat("Trimmed", trimmed$n_removed, "units\\n")

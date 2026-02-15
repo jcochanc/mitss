@@ -25,8 +25,8 @@ based on propensity score distributions
 }
 \examples{
 n <- 1000
-X <- rnorm(n)
-e <- plogis(X)
+X <- matrix(rnorm(n), ncol = 1)
+e <- plogis(X[,1])
 W <- rbinom(n, 1, e)
 
 overlap_check <- check_overlap(e, W)
