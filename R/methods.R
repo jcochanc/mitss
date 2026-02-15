@@ -22,6 +22,8 @@ print.mitss <- function(x, ...) {
 #' @param object A mitss object
 #' @param ... Additional arguments (not used)
 #' @export
+#' @method summary mitss
+#' @importFrom stats median sd
 summary.mitss <- function(object, ...) {
   cat("MITSS Causal Effect Estimation Summary\n")
   cat("=======================================\n\n")
@@ -65,6 +67,8 @@ summary.mitss <- function(object, ...) {
 #'   "propensity" for propensity score distribution, or "balance" for covariate balance
 #' @param ... Additional arguments passed to plot functions
 #' @export
+#' @importFrom graphics abline barplot hist legend rug
+#' @importFrom stats density
 plot.mitss <- function(x, type = c("estimates", "propensity", "balance"), ...) {
   type <- match.arg(type)
   
@@ -117,6 +121,7 @@ plot.mitss <- function(x, type = c("estimates", "propensity", "balance"), ...) {
 #' @param object A mitss object
 #' @param ... Additional arguments (not used)
 #' @export
+#' @importFrom stats setNames
 coef.mitss <- function(object, ...) {
   setNames(object$estimate, "Treatment Effect")
 }

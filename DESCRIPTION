@@ -23,13 +23,12 @@ Depends:
     R (>= 3.5.0)
 Imports:
     splines,
-    stats,
-    MASS
+    stats
 Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: https://github.com/jcochanc/mitss
 BugReports: https://github.com/jcochanc/mitss/issues

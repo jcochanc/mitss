@@ -16,11 +16,11 @@
 #'
 #' @details
 #' The data were generated using the following process:
-#' \itemize{
-#'   \item Covariates X1, X2, X3 are independently drawn from N(0,1)
-#'   \item Propensity scores: e = logit^{-1}(0.3*X1 - 0.4*X2 + 0.2*X3)
-#'   \item Treatment: W ~ Bernoulli(e)
-#'   \item Outcome: Y = 2 + 0.8*W + 0.3*X1 + 0.2*X2 - 0.1*X3 + N(0,1)
+#' \describe{
+#'   \item{Covariates}{\eqn{X_1, X_2, X_3} are independently drawn from \eqn{N(0, 1)}}
+#'   \item{Propensity scores}{\eqn{e = \mathrm{logit}^{-1}(0.3 X_1 - 0.4 X_2 + 0.2 X_3)}}
+#'   \item{Treatment}{\eqn{W \sim \mathrm{Bernoulli}(e)}}
+#'   \item{Outcome}{\eqn{Y = 2 + 0.8 W + 0.3 X_1 + 0.2 X_2 - 0.1 X_3 + \varepsilon}, where \eqn{\varepsilon \sim N(0, 1)}}
 #' }
 #'
 #' The true average treatment effect is 0.8.
@@ -38,30 +38,5 @@
 #' )
 #' print(result)
 #'
-#' @source Simulated data based on Gutman and Rubin (2015)
+#' @source Simulated data based on Gutman and Rubin (2015); generated via data-raw/mitss_example.R.
 "mitss_example"
-
-
-# Generate the actual dataset
-set.seed(14)
-n <- 800
-X1 <- rnorm(n)
-X2 <- rnorm(n)
-X3 <- rnorm(n)
-
-propensity <- plogis(0.3 * X1 - 0.4 * X2 + 0.2 * X3)
-W <- rbinom(n, 1, propensity)
-
-Y <- 2 + 0.8 * W + 0.3 * X1 + 0.2 * X2 - 0.1 * X3 + rnorm(n)
-
-mitss_example <- data.frame(
-  Y = Y,
-  W = W,
-  X1 = X1,
-  X2 = X2,
-  X3 = X3,
-  propensity = propensity
-)
-
-# Save to data directory
-# save(mitss_example, file = "data/mitss_example.rda", compress = "bzip2")

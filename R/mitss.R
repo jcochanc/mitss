@@ -50,6 +50,7 @@
 #' print(result$ci_upper)
 #'
 #' @export
+#' @importFrom stats rnorm
 mitss <- function(Y, W, X, e_hat = NULL, M = 25, n_subclasses = 6,
                   min_per_subclass = 3, estimand = c("ATE", "finite_pop"),
                   alpha = 0.05, seed = NULL) {
@@ -140,6 +141,8 @@ mitss <- function(Y, W, X, e_hat = NULL, M = 25, n_subclasses = 6,
 #' @param X Covariate matrix
 #' @return Vector of estimated propensity scores
 #' @keywords internal
+#' @importFrom stats glm predict binomial as.formula
+#' @importFrom utils combn
 estimate_propensity_score <- function(W, X) {
   # Fit logistic regression
   X_df <- as.data.frame(X)
@@ -190,6 +193,7 @@ estimate_propensity_score <- function(W, X) {
 #' @param min_per_subclass Minimum units per treatment group per subclass
 #' @return List with subclass assignments and actual number of subclasses
 #' @keywords internal
+#' @importFrom stats quantile
 create_subclasses <- function(e_hat, W, n_subclasses, min_per_subclass) {
   n <- length(e_hat)
   
@@ -231,6 +235,7 @@ create_subclasses <- function(e_hat, W, n_subclasses, min_per_subclass) {
 #' @param e_hat Estimated propensity scores
 #' @return Orthogonalized covariate matrix
 #' @keywords internal
+#' @importFrom stats lm residuals
 orthogonalize_covariates <- function(X, e_hat) {
   logit_e <- log(e_hat / (1 - e_hat))
   
@@ -324,6 +329,7 @@ perform_single_imputation <- function(data_list, n_subclasses) {
 #' @param n_subclasses Number of subclasses
 #' @return Fitted model object
 #' @keywords internal
+#' @importFrom stats quantile
 fit_spline_model <- function(Y, logit_e, X_ort, subclasses, n_subclasses) {
   # Create knots at subclass boundaries
   if (n_subclasses > 1) {
@@ -414,6 +420,7 @@ predict_from_spline <- function(fit, logit_e_new, X_ort_new, subclasses_new) {
 #' @param alpha Significance level
 #' @return List with combined estimate, standard error, and CI
 #' @keywords internal
+#' @importFrom stats var
 combine_mi_results <- function(gamma_m, V_m, alpha) {
   M <- length(gamma_m)
   
